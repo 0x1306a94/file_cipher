@@ -1,5 +1,5 @@
 [package]
-name = "img_cipher"
+name = "file_cipher"
 version = "1.0.0"
 edition = "2021"
 
@@ -8,4 +8,3 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.70"
 clap = { version = "4.2.4", features = ["derive"] }
-rand = "0.8.5"
