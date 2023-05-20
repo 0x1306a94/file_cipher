@@ -11,14 +11,10 @@ use anyhow::{anyhow, Result};
 #[command(version = "1.0.0")]
 #[command(about = "Simply use xor to encrypt and decrypt files", long_about = None)]
 struct Cli {
-    #[arg(long, short, help = "input file path")]
+    #[arg(long, short, help = "input file path or input directory")]
     input: PathBuf,
 
-    #[arg(
-        long,
-        short,
-        help = "output file, if it is a directory, the final output file path is OUTPUT/INPUT.filename"
-    )]
+    #[arg(long, short, help = "output directory")]
     output: PathBuf,
 
     #[arg(
@@ -48,29 +44,23 @@ struct Cli {
 const MAGIC_BYTES: &[u8] = b"rs_file_cipher";
 const MAGIC_BYTES_LEN: usize = 14;
 
-fn main() -> Result<()> {
-    let cli = Cli::parse();
-    let out_path: PathBuf = if cli.output.is_dir() {
-        let mut output = cli.output.clone();
-        output.push(cli.input.file_name().unwrap());
-        output
-    } else {
-        cli.output
-    };
+fn processing_file<P: AsRef<std::path::Path>>(
+    input: P,
+    output: P,
+    encrypt: bool,
+    xor: u8,
+) -> Result<()> {
+    let in_file = File::open(input)?;
 
-    if cli.xor == 0 {
-        return Err(anyhow!("The xor parameter cannot be zero"));
-    }
-
-    let in_file = File::open(cli.input)?;
-    let out_file = OpenOptions::new().create(true).write(true).open(out_path)?;
     let mut br = BufReader::new(in_file);
-    let mut bw = BufWriter::new(out_file);
+    let mut bw: BufWriter<File>;
 
     let mut buffer = vec![0u8; 1024];
 
     // let begin_time = Instant::now();
-    if cli.encrypt {
+    if encrypt {
+        let out_file = OpenOptions::new().create(true).write(true).open(output)?;
+        bw = BufWriter::new(out_file);
         bw.write_all(MAGIC_BYTES)?;
     } else {
         let mut buffer = [0u8; MAGIC_BYTES_LEN];
@@ -79,11 +69,15 @@ fn main() -> Result<()> {
             .iter()
             .zip(buffer.iter())
             .position(|(a, b)| a != b);
+
         if let Some(_) = index {
             return Err(anyhow!(
                 "The input file is not a file encrypted by file_cipher"
             ));
         }
+
+        let out_file = OpenOptions::new().create(true).write(true).open(output)?;
+        bw = BufWriter::new(out_file);
     }
 
     loop {
@@ -91,7 +85,7 @@ fn main() -> Result<()> {
         if read_len == 0 {
             break;
         }
-        let out: Vec<u8> = buffer[0..read_len].iter().map(|v| v ^ cli.xor).collect();
+        let out: Vec<u8> = buffer[0..read_len].iter().map(|v| v ^ xor).collect();
         bw.write_all(&out)?;
     }
 
@@ -99,5 +93,42 @@ fn main() -> Result<()> {
 
     // let end_time = Instant::now();
     // println!("elapsed time: {:?}", end_time.duration_since(begin_time));
+    Ok(())
+}
+
+fn main() -> Result<()> {
+    let cli = Cli::parse();
+
+    if !cli.output.exists() {
+        let copied = cli.output.clone();
+        std::fs::create_dir_all(copied)?;
+        // return Err(anyhow!("The output dir does not exist"));
+    }
+
+    if cli.xor == 0 {
+        return Err(anyhow!("The xor parameter cannot be zero"));
+    }
+
+    if cli.input.is_dir() {
+        for entry in std::fs::read_dir(cli.input)? {
+            let entry = entry?;
+            let path = entry.path();
+
+            if path.is_dir() {
+                continue;
+            }
+
+            let filename = path.file_name().unwrap();
+            let mut output = cli.output.clone();
+            output.push(filename);
+            let _ = processing_file(path, output, cli.encrypt, cli.xor);
+        }
+    } else {
+        let filename = cli.input.file_name().unwrap();
+        let mut output = cli.output.clone();
+        output.push(filename);
+        processing_file(cli.input, output, cli.encrypt, cli.xor)?;
+    }
+
     Ok(())
 }
