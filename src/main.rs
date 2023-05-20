@@ -43,6 +43,8 @@ struct Cli {
 
 const MAGIC_BYTES: &[u8] = b"rs_file_cipher";
 const MAGIC_BYTES_LEN: usize = 14;
+const FORMAT_VERSION: u16 = 0x0001;
+const HEADER_LEN: usize = MAGIC_BYTES_LEN + 2;
 
 fn processing_file<P: AsRef<std::path::Path>>(
     input: P,
@@ -62,12 +64,14 @@ fn processing_file<P: AsRef<std::path::Path>>(
         let out_file = OpenOptions::new().create(true).write(true).open(output)?;
         bw = BufWriter::new(out_file);
         bw.write_all(MAGIC_BYTES)?;
+        let version = FORMAT_VERSION.to_be_bytes();
+        bw.write_all(&version)?;
     } else {
-        let mut buffer = [0u8; MAGIC_BYTES_LEN];
+        let mut buffer = [0u8; HEADER_LEN];
         br.read_exact(&mut buffer)?;
         let index = MAGIC_BYTES
             .iter()
-            .zip(buffer.iter())
+            .zip(buffer[0..MAGIC_BYTES_LEN].iter())
             .position(|(a, b)| a != b);
 
         if let Some(_) = index {
@@ -75,7 +79,10 @@ fn processing_file<P: AsRef<std::path::Path>>(
                 "The input file is not a file encrypted by file_cipher"
             ));
         }
-
+        let mut bytes = [0u8; 2];
+        bytes[0] = buffer[MAGIC_BYTES_LEN];
+        bytes[1] = buffer[MAGIC_BYTES_LEN + 1];
+        let version = u16::from_be_bytes(bytes);
         let out_file = OpenOptions::new().create(true).write(true).open(output)?;
         bw = BufWriter::new(out_file);
     }
