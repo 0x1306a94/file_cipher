@@ -3,7 +3,6 @@ use std::path::PathBuf;
 use clap::{Parser, Subcommand};
 use clap_verbosity_flag::Verbosity;
 
-use file_cipher::cipher::Cipher;
 use log;
 use std::fs::{File, OpenOptions};
 use std::io::{BufReader, BufWriter};
@@ -157,7 +156,7 @@ fn main() -> Result<()> {
 
     match cli.command {
         Command::GenerateKey => {
-            let key = micro_uecc_safe::uecc_mkae_key_with_secp2561k1()?;
+            let key = micro_uecc_safe::uecc_mkae_key_with_secp256k1()?;
             println!("private_key: {}", key.private_key);
             println!("public_key: {}", key.public_key);
             return Ok(());

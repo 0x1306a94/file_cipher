@@ -1,7 +1,5 @@
 use std::fmt;
 
-use crate::header;
-
 #[derive(Debug)]
 pub enum FileCipherError {
     // 长度不够

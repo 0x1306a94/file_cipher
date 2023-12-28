@@ -6,7 +6,6 @@ use crate::version::Version;
 
 pub(crate) const MAGIC_BYTES: &[u8] = b"rs_file_cipher";
 pub(crate) const MAGIC_BYTES_LEN: usize = MAGIC_BYTES.len();
-pub(crate) const HEADER_LEN: usize = MAGIC_BYTES_LEN + 2;
 
 pub(crate) const ECC_PUBLIC_KEY_LEN: usize = 64;
 pub(crate) const ECC_PRIVATE_KEY_LEN: usize = 32;
