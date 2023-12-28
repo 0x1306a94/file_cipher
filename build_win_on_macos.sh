@@ -8,7 +8,7 @@ OUT_NAME=file_cipher_cli
 # rustup target add x86_64-pc-windows-gnu
 # brew install mingw-w64
 
-VERSION="v1.1.0"
+VERSION="v1.1.1"
 CUR_DIR=$PWD
 
 function useage() {

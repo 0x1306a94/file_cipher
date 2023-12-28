@@ -13,7 +13,7 @@ use file_cipher;
 use micro_uecc_safe;
 
 #[derive(Parser)]
-#[command(version)]
+#[command(version = "1.1.1")]
 #[command(about = "encrypt and decrypt files", long_about = None)]
 struct Cli {
     #[clap(subcommand)]
@@ -136,13 +136,25 @@ fn processing<C: file_cipher::cipher::Cipher>(
             let filename = path.file_name().unwrap();
             let mut _output = output.clone();
             _output.push(filename);
-            let _ = processing_file(cipher, path, _output, encrypt);
+            match processing_file(cipher, path, _output.clone(), encrypt) {
+                Err(ref err) => {
+                    log::error!("{}", err);
+                    std::fs::remove_file(_output)?;
+                }
+                _ => {}
+            }
         }
     } else {
         let filename = input.file_name().unwrap();
         let mut _output = output.clone();
         _output.push(filename);
-        processing_file(cipher, input, &_output, encrypt)?;
+        match processing_file(cipher, input, &_output.clone(), encrypt) {
+            Err(ref err) => {
+                log::error!("{}", err);
+                std::fs::remove_file(_output)?;
+            }
+            _ => {}
+        }
     }
 
     Ok(())
