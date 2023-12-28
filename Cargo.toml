@@ -1,19 +1,21 @@
 [package]
+edition = "2021"
 name = "file_cipher"
 version = "1.1.0"
-edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
+[env]
+# OPENSSL_STATIC = 1
+OPENSSL_DIR = "$PWD/third_party/OpenSSL/macosx"
 
 [dependencies]
 anyhow = "1.0.70"
 byte_struct = "0.9.0"
-clap = { version = "4.2.4", features = ["derive"] }
+clap = {version = "4.2.4", features = ["derive"]}
 clap-verbosity-flag = "2.1.1"
 env_logger = "0.10.1"
 log = "0.4.20"
-micro-uecc-safe = { path = "micro-uecc-safe", version = "*" }
+micro-uecc-safe = {path = "micro-uecc-safe", version = "*"}
 openssl = "0.10.62"
 rand = "0.8.5"
 

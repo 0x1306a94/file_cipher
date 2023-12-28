@@ -2,6 +2,9 @@
 
 set -e
 
+export OPENSSL_STATIC=1
+export OPENSSL_DIR=$PWD/third_party/OpenSSL/macosx
+
 MAC_X86_TARGET=x86_64-apple-darwin
 MAC_ARM64_TARGET=aarch64-apple-darwin
 OUT_NAME=file_cipher_cli
