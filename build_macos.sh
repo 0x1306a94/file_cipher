@@ -4,9 +4,9 @@ set -e
 
 MAC_X86_TARGET=x86_64-apple-darwin
 MAC_ARM64_TARGET=aarch64-apple-darwin
-OUT_NAME=file_cipher
+OUT_NAME=file_cipher_cli
 
-VERSION="v1.0.0"
+VERSION="v1.1.0"
 CUR_DIR=$PWD
 
 function useage() {

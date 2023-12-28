@@ -3,12 +3,12 @@
 set -e
 
 WIN_TARGET=x86_64-pc-windows-gnu
-OUT_NAME=file_cipher
+OUT_NAME=file_cipher_cli
 
 # rustup target add x86_64-pc-windows-gnu
 # brew install mingw-w64
 
-VERSION="v1.0.0"
+VERSION="v1.1.0"
 CUR_DIR=$PWD
 
 function useage() {
