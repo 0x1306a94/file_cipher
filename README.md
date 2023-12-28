@@ -14,3 +14,29 @@ Options:
   -h, --help             Print help
   -V, --version          Print version
 ```
+
+# Install
+
+### Build Install
+```bash
+git clone https://github.com/0x1306a94/file_cipher
+cd file_cipher
+cargo install --path .
+```
+
+### macOS
+  - #### Manual installation
+    * [Download Release file_cipher-macos-universal-binaries.zip](https://github.com/0x1306a94/file_cipher/releases)
+    ```sh
+    unzip file_cipher-macos-universal-binaries.zip
+    cp file_cipher /usr/local/bin/file_cipher
+    sudo chmod +x /usr/local/bin/file_cipher
+    ```
+  - #### Homebrew installation
+  ```sh
+  brew tap 0x1306a94/homebrew-tap
+  brew install file_cipher
+  ```
+
+### Windows
+[Download Release](https://github.com/0x1306a94/file_cipher/releases)

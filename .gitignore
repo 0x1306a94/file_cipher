@@ -62,3 +62,4 @@ Cargo.lock
 
 /test_files
 /.vscode
+/build_out
